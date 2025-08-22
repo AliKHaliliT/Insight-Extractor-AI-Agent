@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insight Cards Demo</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Theming and Variables --- */
+        :root {
+            --font-primary: "Inter", sans-serif;
+            --color-background: #0f172a; --color-surface: #1e293b; --color-surface-glass: rgba(30, 41, 59, 0.6); --color-border: #334155; --color-text-primary: #f1f5f9; --color-text-secondary: #94a3b8; --color-text-tertiary: #64748b; --color-accent: #3b82f6; --color-accent-hover: #2563eb; --color-accent-text: #ffffff; --color-error: #ef4444; --color-error-surface: rgba(239, 68, 68, 0.1); --color-error-border: rgba(239, 68, 68, 0.3); --color-error-text: #f87171; --shadow-color: rgba(0, 0, 0, 0.5);
+        }
+        [data-theme="light"] {
+            --color-background: #f1f5f9; --color-surface: #ffffff; --color-surface-glass: rgba(255, 255, 255, 0.7); --color-border: #cbd5e1; --color-text-primary: #1e293b; --color-text-secondary: #475569; --color-text-tertiary: #94a3b8; --color-accent: #2563eb; --color-accent-hover: #1d4ed8; --color-accent-text: #ffffff; --color-error: #dc2626; --color-error-surface: rgba(220, 38, 38, 0.1); --color-error-border: rgba(220, 38, 38, 0.3); --color-error-text: #b91c1c; --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- Base Styles --- */
+        body {
+            font-family: var(--font-primary);
+            background-color: var(--color-background);
+            color: var(--color-text-primary);
+            padding: 2rem;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* --- Theme Classes --- */
+        .themed-text-primary { color: var(--color-text-primary); } .themed-text-secondary { color: var(--color-text-secondary); } .themed-text-tertiary { color: var(--color-text-tertiary); } .themed-text-accent { color: var(--color-accent); } .themed-accent-text { color: var(--color-accent-text); }
+        .themed-input { background-color: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text-primary); }
+        .themed-input::placeholder { color: var(--color-text-tertiary); }
+        .themed-accent-bg { background-color: var(--color-accent); } .themed-accent-bg:hover { background-color: var(--color-accent-hover); }
+        .themed-secondary-bg { background-color: var(--color-surface); border: 1px solid var(--color-border); }
+        .themed-secondary-bg-hover:hover { background-color: var(--color-background); }
+        #drop-area.themed-accent-border { border-color: var(--color-accent); }
+        .themed-tertiary-bg { background-color: var(--color-border); } .themed-chip-bg { background-color: rgba(148, 163, 184, 0.2); }
+        .themed-border { border: 1px solid var(--color-border); } .themed-border-t { border-top: 1px solid var(--color-border); } .themed-border-b { border-bottom: 1px solid var(--color-border); }
+        .themed-disabled-bg { background-color: var(--color-border); } .themed-disabled-text { color: var(--color-text-tertiary); }
+        .themed-error-bg { background-color: var(--color-error-surface); } .themed-error-border { border: 1px solid var(--color-error-border); } .themed-error-text { color: var(--color-error-text); }
+
+        /* --- Layout Control via Container State --- */
+        #app-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        /* Center content vertically for setup and loading states */
+        #app-container.state-setup,
+        #app-container.state-loading {
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 4rem); /* Viewport height minus body padding */
+        }
+        /* Align content to the top for the results state */
+        #app-container.state-results {
+            justify-content: flex-start;
+        }
+
+
+        /* --- Layout Fixes & Additions --- */
+        #insights-grid { align-content: flex-start; min-height: 300px; }
+        #no-insights-message { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 1rem; grid-column: 1 / -1; color: var(--color-text-tertiary); border: 2px dashed var(--color-border); border-radius: 1rem; text-align: center; }
+        #no-insights-message svg { width: 3rem; height: 3rem; margin-bottom: 1rem; stroke: var(--color-text-tertiary); }
+
+        .glass-card { background: var(--color-surface-glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--color-border); transition: background-color 0.3s, border-color 0.3s; }
+        .executive-summary { background: var(--color-surface); border-color: var(--color-border); }
+
+        /* --- Components --- */
+        #theme-toggle-container { position: fixed; top: 1rem; right: 1.5rem; z-index: 50; }
+        #theme-toggle-btn { width: 3rem; height: 3rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--color-text-secondary); transition: all 0.2s ease-in-out; }
+        #theme-toggle-btn:hover { color: var(--color-text-primary); transform: scale(1.1) rotate(15deg); }
+
+        .interactive-btn { transition: all 0.2s ease-in-out; }
+        .interactive-btn:not(:disabled):hover { filter: brightness(1.1); }
+        .interactive-btn:not(:disabled):active { transform: scale(0.98); filter: brightness(0.95); }
+
+        /* Tooltip Styles */
+        .tooltip-container { position: relative; display: inline-flex; align-items: center; }
+        .info-icon { display: flex; align-items: center; justify-content: center; width: 1rem; height: 1rem; border-radius: 50%; background-color: var(--color-border); color: var(--color-text-secondary); font-size: 0.75rem; font-weight: bold; cursor: help; margin-left: 0.5rem; }
+        .tooltip-text { visibility: hidden; opacity: 0; width: 240px; background-color: var(--color-surface); color: var(--color-text-primary); text-align: center; border-radius: 0.5rem; padding: 0.75rem; position: absolute; z-index: 10; bottom: 140%; left: 50%; transform: translateX(-50%); transition: opacity 0.3s; border: 1px solid var(--color-border); box-shadow: 0 4px 6px var(--shadow-color); pointer-events: none; }
+        .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }
+
+        /* Filter & Sort Controls */
+        #filter-sort-controls { display: flex; flex-wrap: wrap; gap: 1rem; }
+        #filter-sort-controls > div { flex-grow: 1; }
+        #filter-sort-controls label { font-size: 0.875rem; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 0.5rem; display: block; }
+        #filter-sort-controls select {
+            width: 100%;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem;
+        }
+        #sort-direction-btn.sort-ascending svg {
+            transform: rotate(180deg);
+        }
+
+        /* --- Animations --- */
+        .loading-spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .insight-card { animation: fadeIn 0.5s ease-out forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .btn-pulsate { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+        }
+    </style>
+</head>
+<body class="p-4 transition-all duration-500">
+    <main id="app-container" class="w-full max-w-7xl mx-auto">
+        <h1 class="text-4xl md:text-5xl font-bold themed-text-primary mb-2 text-center">Insight Cards Demo</h1>
+        <p class="themed-text-secondary text-center mb-8">A demonstration of all possible variations of the insight cards.</p>
+        <div id="insights-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
+    </main>
+
+    <template id="insight-card-template">
+        <div class="insight-card glass-card p-6 rounded-2xl flex flex-col space-y-4">
+            <div class="flex justify-between items-start">
+                <h4 class="insight-title text-lg font-bold themed-text-primary pr-4"></h4>
+                <div class="tooltip-container">
+                    <span class="insight-severity text-xs font-semibold px-2.5 py-1 rounded-full border flex-shrink-0"></span>
+                    <div class="info-icon">i</div>
+                    <div class="tooltip-text insight-severity-tooltip"></div>
+                </div>
+            </div>
+            <div class="flex items-center justify-between text-sm themed-text-secondary themed-border-b pb-3">
+                <span class="insight-type font-medium themed-chip-bg px-2 py-1 rounded"></span>
+                <div class="tooltip-container">
+                    <div class="flex items-center space-x-2">
+                        <span>Confidence</span>
+                        <div class="w-20 h-2 themed-tertiary-bg rounded-full overflow-hidden">
+                            <div class="insight-confidence-bar h-full"></div>
+                        </div>
+                        <span class="insight-confidence-text"></span>
+                    </div>
+                    <div class="info-icon">i</div>
+                    <div class="tooltip-text">The AI's confidence in the accuracy and relevance of this insight, based on the provided data.</div>
+                </div>
+            </div>
+            <p class="insight-description themed-text-secondary"></p>
+            <div class="insight-details"></div>
+            <div class="insight-grounding"></div>
+            <div class="insight-recommendation"></div>
+        </div>
+    </template>
+
+    <script>
+        const mockInsights = [
+            // --- Quantitative Metric Insights ---
+            {
+                title: "CPU Utilization Exceeds Threshold",
+                description: "The average CPU utilization over the last 15 minutes was 92%, which is above the configured critical threshold of 90%.",
+                insight_type: "Quantitative Metric",
+                severity: "Critical",
+                confidence_score: 0.98,
+                locations: [{ location: "server-1, metrics.log" }],
+                representative_snippet: "timestamp:1678886400, server:server-1, metric:cpu_utilization, value:92.1",
+                actionable_recommendation: "Scale up the compute resources for server-1 or investigate the running processes for unexpected CPU load.",
+                metric_name: "CPU Utilization",
+                value: 92.1,
+                unit: "%"
+            },
+            {
+                title: "API Response Time Degradation",
+                description: "The p95 latency for the /api/v1/users endpoint has increased by 45% in the last hour.",
+                insight_type: "Quantitative Metric",
+                severity: "High",
+                confidence_score: 0.85,
+                locations: [{ location: "api-gateway.log" }],
+                representative_snippet: "p95_latency{endpoint='/api/v1/users'} 450.2ms",
+                actionable_recommendation: "Review recent deployments for changes affecting this endpoint. Check database query performance.",
+                metric_name: "p95 Latency",
+                value: 450.2,
+                unit: "ms"
+            },
+            {
+                title: "Disk Space Running Low",
+                description: "The primary database server has only 10% of its disk space remaining.",
+                insight_type: "Quantitative Metric",
+                severity: "Medium",
+                confidence_score: 0.99,
+                locations: [{ location: "db-server-main, df -h" }],
+                representative_snippet: "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda1       100G   90G   10G  90% /",
+                metric_name: "Available Disk",
+                value: 10,
+                unit: "%"
+            },
+
+            // --- Key Theme Insights ---
+            {
+                title: "Frequent User Complaints about UI Sluggishness",
+                description: "Multiple users have reported that the main dashboard is slow to load and unresponsive, particularly during peak hours.",
+                insight_type: "Key Theme",
+                severity: "High",
+                confidence_score: 0.78,
+                locations: [{ location: "support-tickets.csv" }, { location: "user-feedback.json" }],
+                representative_snippet: "The dashboard takes forever to load my widgets. I clicked the refresh button five times and nothing happened.",
+                actionable_recommendation: "Profile the frontend performance of the dashboard. Investigate backend API response times that power the dashboard widgets.",
+                keywords: ["UI", "slow", "dashboard", "unresponsive", "performance"],
+                mentions: 15
+            },
+            {
+                title: "Positive Feedback on New Feature",
+                description: "Analysis of recent user feedback shows a strong positive reception for the newly released 'Advanced Reporting' feature.",
+                insight_type: "Key Theme",
+                severity: "Informational",
+                confidence_score: 0.92,
+                locations: [{ location: "app-reviews.txt" }],
+                representative_snippet: "The new advanced reporting is a game changer! It gives me all the data I need in one place.",
+                keywords: ["reporting", "feature", "positive", "love", "useful"],
+                mentions: 42
+            },
+
+            // --- Sentiment Analysis Insights ---
+            {
+                title: "Overall Customer Sentiment is Negative",
+                description: "The sentiment analysis of recent support interactions indicates a predominantly negative customer experience.",
+                insight_type: "Sentiment Analysis",
+                severity: "Critical",
+                confidence_score: 0.88,
+                locations: [{ location: "support-transcripts.log" }],
+                representative_snippet: "I have been waiting for a response for three days. This is unacceptable service.",
+                actionable_recommendation: "Review support team workload and response times. Identify and address the root causes of the most common complaints.",
+                sentiment: {
+                    label: "Negative",
+                    score: -0.75,
+                    explanation: "The text contains strong negative language and expresses frustration with the service."
+                }
+            },
+            {
+                title: "Mixed Sentiment in Product Reviews",
+                description: "Product reviews show a mix of positive comments about product features and negative comments about the pricing.",
+                insight_type: "Sentiment Analysis",
+                severity: "Medium",
+                confidence_score: 0.65,
+                locations: [{ location: "product-reviews.json" }],
+                representative_snippet: "I love the features, but it's just too expensive for our team's budget.",
+                sentiment: {
+                    label: "Mixed",
+                    score: 0.1,
+                    explanation: "The text contains both positive and negative sentiment, balancing out to a neutral score."
+                }
+            },
+
+            // --- Table Analysis Insights ---
+            {
+                title: "Sales Q4 Growth Leader Identified",
+                description: "The 'North America' region showed the highest quarter-over-quarter sales growth in Q4, significantly outpacing other regions.",
+                insight_type: "Table Analysis",
+                severity: "High",
+                confidence_score: 0.99,
+                locations: [{ location: "sales_report_q4.xlsx" }],
+                representative_snippet: "A summary of the sales performance table in the attached spreadsheet.",
+                actionable_recommendation: "Analyze the strategies employed by the North American team to see if they can be replicated in other regions.",
+                summary: "The analysis of the sales data table reveals that North America's growth was 25% in Q4, while Europe grew by 10% and Asia by 5%.",
+                table_headers: ["Region", "Q3 Sales", "Q4 Sales", "QoQ Growth %"]
+            },
+
+            // --- Code Analysis Insights ---
+            {
+                title: "Potential N+1 Query Detected in API",
+                description: "The user retrieval logic may be executing a separate database query for each user, which could lead to performance issues.",
+                insight_type: "Code Analysis",
+                severity: "Medium",
+                confidence_score: 0.75,
+                locations: [{ location: "api/services/user_service.py" }],
+                representative_snippet: "for user_id in user_ids:\n  user = db.get_user(user_id)",
+                actionable_recommendation: "Refactor the data retrieval logic to fetch all users in a single query to avoid the N+1 problem.",
+                language: "Python",
+                summary: "The code iterates through a list of IDs and performs a database call inside the loop. This is an inefficient pattern.",
+                potential_issues: ["N+1 Query", "Performance Bottleneck"]
+            }
+        ];
+
+        const ui = {
+            insightsGrid: document.getElementById("insights-grid"),
+            insightCardTemplate: document.getElementById("insight-card-template"),
+        };
+
+        const appState = {
+            activeCharts: [],
+        };
+
+        function createSentimentChart(canvasElement, score) {
+            if (!canvasElement || !canvasElement.getContext) return;
+            
+            if (!canvasElement.id) {
+                canvasElement.id = `chart-${Math.random().toString(36).substring(2, 9)}`;
+            }
+
+            const ctx = canvasElement.getContext("2d");
+            const isDarkMode = (document.documentElement.getAttribute("data-theme") || "dark") === "dark";
+            const chart = new Chart(ctx, {
+                type: "doughnut",
+                data: { datasets: [{ data: [(score + 1) / 2, 1 - ((score + 1) / 2)], backgroundColor: [score > 0.2 ? "rgb(52, 211, 153)" : score < -0.2 ? "rgb(248, 113, 113)" : "rgb(250, 204, 21)", isDarkMode ? "#334155" : "#e2e8f0"], borderColor: isDarkMode ? "#0f172a" : "#f1f5f9", borderWidth: 2, cutout: "70%" }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { animateRotate: true, duration: 1500 } },
+                plugins: [{ id: "doughnutText", afterDraw(chart) {
+                    const { ctx, width, height } = chart;
+                    ctx.restore();
+                    ctx.font = "bold 1.2rem Inter";
+                    ctx.fillStyle = isDarkMode ? "#f1f5f9" : "#1e293b";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(`${Math.round(((score + 1) / 2) * 100)}%`, width / 2, height / 2);
+                    ctx.save();
+                }}]
+            });
+            appState.activeCharts.push({ instance: chart, canvas: canvasElement, score: score });
+        }
+
+        function createInsightCard(insight, index) {
+            const card = ui.insightCardTemplate.content.cloneNode(true).firstElementChild;
+            card.style.animationDelay = `${index * 100}ms`;
+            card.dataset.insightType = insight.insight_type;
+            if (index === 0 || insight.severity === "Critical") { card.classList.add("lg:col-span-2"); }
+            
+            card.querySelector(".insight-title").textContent = insight.title;
+            const severityEl = card.querySelector(".insight-severity");
+            severityEl.textContent = insight.severity;
+            severityEl.className += ` ${getSeverityStyles(insight.severity)}`;
+            card.querySelector(".insight-severity-tooltip").textContent = getSeverityTooltipText(insight.severity);
+            card.querySelector(".insight-type").textContent = insight.insight_type;
+            
+            const confidenceBarWidth = insight.confidence_score * 100;
+            card.querySelector(".insight-confidence-bar").style.width = `${confidenceBarWidth}%`;
+            card.querySelector(".insight-confidence-bar").classList.add(getConfidenceColor(insight.confidence_score));
+            card.querySelector(".insight-confidence-text").textContent = `${Math.round(confidenceBarWidth)}%`;
+            card.querySelector(".insight-description").textContent = insight.description;
+            
+            const detailsContainer = card.querySelector(".insight-details");
+            detailsContainer.innerHTML = createInsightDetailsHTML(insight);
+            if (insight.insight_type === "Sentiment Analysis") {
+                setTimeout(() => createSentimentChart(detailsContainer.querySelector("canvas"), insight.sentiment.score), 0);
+            }
+            
+            const groundingContainer = card.querySelector(".insight-grounding");
+            if (insight.representative_snippet) { groundingContainer.innerHTML = createGroundingEvidenceHTML(insight); }
+            
+            const recommendationContainer = card.querySelector(".insight-recommendation");
+            if (insight.actionable_recommendation) { recommendationContainer.innerHTML = createActionableRecommendationHTML(insight); }
+            
+            return card;
+        }
+
+        function createInsightDetailsHTML(insight) {
+            const cardInnerHTML = (title, content) => `<div class="themed-secondary-bg p-4 rounded-lg">${title}${content}</div>`;
+            const titleHTML = (text) => `<p class="text-sm themed-text-secondary mb-1">${text}</p>`;
+            const mainTextHTML = (text) => `<p class="text-3xl font-bold themed-text-primary">${text}</p>`;
+            switch (insight.insight_type) {
+                case "Quantitative Metric": return cardInnerHTML(titleHTML(insight.metric_name), mainTextHTML(`${insight.value}<span class="text-xl themed-text-secondary ml-1">${insight.unit || ''}</span>`));
+                case "Key Theme":
+                    const keywordsHTML = insight.keywords.map(k => `<span class="themed-chip-bg themed-text-secondary text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">${k}</span>`).join('');
+                    return `<div class="themed-secondary-bg p-4 rounded-lg flex justify-between items-center"><div>${titleHTML("Keywords")}<div class="mt-1">${keywordsHTML}</div></div><div class="text-center"><p class="text-3xl font-bold themed-text-primary">${insight.mentions}</p><p class="text-xs themed-text-secondary">Mentions</p></div></div>`;
+                case "Sentiment Analysis": return `<div class="themed-secondary-bg p-4 rounded-lg"><div class="flex items-center space-x-4"><div class="w-24 h-24 flex-shrink-0"><canvas></canvas></div><div class="flex-1"><div class="tooltip-container mb-1"><p class="text-sm themed-text-secondary">Overall Sentiment</p><div class="info-icon">i</div><div class="tooltip-text">A score from -1 (very negative) to +1 (very positive). The chart shows the % positivity.</div></div><p class="text-lg font-bold themed-text-primary">${insight.sentiment.label}</p><p class="text-xs themed-text-secondary mt-1">${insight.sentiment.explanation}</p></div></div></div>`;
+                case "Table Analysis": case "Code Analysis": return cardInnerHTML(titleHTML("AI Summary"), `<p class="themed-text-secondary">${insight.summary}</p>`);
+                default: return '';
+            }
+        }
+
+        function createGroundingEvidenceHTML(insight) {
+            const locationsHTML = insight.locations.map(loc => `<span class="inline-block themed-chip-bg themed-text-tertiary text-xs font-medium mr-2 mb-2 px-2.5 py-1 rounded-lg">${loc.location}</span>`).join('');
+            return `<div><p class="text-sm font-semibold themed-text-secondary mb-2">Grounding Evidence</p><blockquote class="themed-secondary-bg border-l-4 themed-border pl-4 py-2 rounded-r-lg mb-3"><p class="themed-text-secondary italic">"${insight.representative_snippet}"</p></blockquote><div class="flex flex-wrap">${locationsHTML}</div></div>`;
+        }
+
+        function createActionableRecommendationHTML(insight) { 
+            return `<div class="themed-border-t pt-3"><p class="text-sm font-semibold themed-text-accent mb-2">Actionable Recommendation</p><p class="themed-text-secondary">${insight.actionable_recommendation}</p></div>`; 
+        }
+
+        function getSeverityStyles(severity) {
+            const styles = { "Critical": "bg-red-500/20 text-red-400 border-red-500/30", "High": "bg-orange-500/20 text-orange-400 border-orange-500/30", "Medium": "bg-yellow-500/20 text-yellow-400 border-yellow-500/30", "Low": "bg-blue-500/20 text-blue-400 border-blue-500/30", "Informational": "themed-chip-bg themed-text-secondary themed-border", };
+            return styles[severity] || styles["Informational"];
+        }
+
+        function getSeverityTooltipText(severity) {
+            const descriptions = { "Critical": "Requires immediate attention.", "High": "A significant finding.", "Medium": "A noteworthy finding.", "Low": "A minor finding.", "Informational": "A general observation.", };
+            return descriptions[severity] || "Severity level of this insight.";
+        }
+
+        function getConfidenceColor(score) { 
+            if (score < 0.5) return "bg-red-500"; 
+            if (score < 0.8) return "bg-yellow-500"; 
+            return "bg-green-500"; 
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            mockInsights.forEach((insight, index) => {
+                const card = createInsightCard(insight, index);
+                ui.insightsGrid.appendChild(card);
+            });
+        });
+    </script>
+</body>
+</html>

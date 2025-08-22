@@ -1,0 +1,47 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "main.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "app/static/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "app/templates/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "docs/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "main.py"
+    },
+    {
+      "src": "/health",
+      "dest": "main.py"
+    },
+    {
+      "src": "/static/(.*)",
+      "dest": "app/static/$1"
+    },
+    {
+      "src": "/templates/(.*)",
+      "dest": "app/templates/$1"
+    },
+    {
+      "src": "/docs/(.*)",
+      "dest": "docs/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "main.py"
+    }
+  ]
+}

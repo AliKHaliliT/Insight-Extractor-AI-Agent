@@ -1,0 +1,30 @@
+/* --- Theming and Variables --- */
+:root {
+    --font-primary: "Inter", sans-serif;
+    --color-background: #0f172a; --color-surface: #1e293b; --color-surface-glass: rgba(30, 41, 59, 0.6); --color-border: #334155; --color-text-primary: #f1f5f9; --color-text-secondary: #94a3b8; --color-text-tertiary: #64748b; --color-accent: #3b82f6; --color-accent-hover: #2563eb; --color-accent-text: #ffffff; --color-error: #ef4444; --color-error-surface: rgba(239, 68, 68, 0.1); --color-error-border: rgba(239, 68, 68, 0.3); --color-error-text: #f87171; --shadow-color: rgba(0, 0, 0, 0.5);
+}
+[data-theme="light"] {
+    --color-background: #f1f5f9; --color-surface: #ffffff; --color-surface-glass: rgba(255, 255, 255, 0.7); --color-border: #cbd5e1; --color-text-primary: #1e293b; --color-text-secondary: #475569; --color-text-tertiary: #94a3b8; --color-accent: #2563eb; --color-accent-hover: #1d4ed8; --color-accent-text: #ffffff; --color-error: #dc2626; --color-error-surface: rgba(220, 38, 38, 0.1); --color-error-border: rgba(220, 38, 38, 0.3); --color-error-text: #b91c1c; --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* --- Base Styles --- */
+body {
+    font-family: var(--font-primary);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    padding: 2rem;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* --- Theme Classes --- */
+.themed-text-primary { color: var(--color-text-primary); } .themed-text-secondary { color: var(--color-text-secondary); } .themed-text-tertiary { color: var(--color-text-tertiary); } .themed-text-accent { color: var(--color-accent); } .themed-accent-text { color: var(--color-accent-text); }
+.themed-input { background-color: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text-primary); }
+.themed-input::placeholder { color: var(--color-text-tertiary); }
+.themed-accent-bg { background-color: var(--color-accent); } .themed-accent-bg:hover { background-color: var(--color-accent-hover); }
+.themed-secondary-bg { background-color: var(--color-surface); border: 1px solid var(--color-border); }
+.themed-secondary-bg-hover:hover { background-color: var(--color-background); }
+#drop-area.themed-accent-border { border-color: var(--color-accent); }
+.themed-tertiary-bg { background-color: var(--color-border); } .themed-chip-bg { background-color: rgba(148, 163, 184, 0.2); }
+.themed-border { border: 1px solid var(--color-border); } .themed-border-t { border-top: 1px solid var(--color-border); } .themed-border-b { border-bottom: 1px solid var(--color-border); }
+.themed-disabled-bg { background-color: var(--color-border); } .themed-disabled-text { color: var(--color-text-tertiary); }
+.themed-error-bg { background-color: var(--color-error-surface); } .themed-error-border { border: 1px solid var(--color-error-border); } .themed-error-text { color: var(--color-error-text); }
