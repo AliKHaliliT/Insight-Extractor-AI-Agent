@@ -19,7 +19,7 @@ It allows you to extract structured insights from documents of various formats. 
 > ⚡ The quality, accuracy, and speed of analysis depend on the model you choose. For best results, use models with high context windows and reasoning capabilities (preferably adaptive reasoning).  
 > 📂 Documents of any size are supported from the project side. However, your model must be able to handle them.
 
-You can explore output schemas in [`insight_extractor_ai_agent/schemas`](insight_extractor_ai_agent/schemas).
+You can explore output schemas in `insight_extractor_ai_agent/schemas` or view them [here](https://alikhalilit.github.io/Insight-Extractor-AI-Agent/).
 
 If using Gemini, you can get a free API key from [Google AI Studio](https://aistudio.google.com/).  
 
