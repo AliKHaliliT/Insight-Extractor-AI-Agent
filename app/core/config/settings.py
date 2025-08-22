@@ -41,7 +41,7 @@ class Settings(BaseSettings):
 
     # Rate Limits
     ## Global
-    RATE_LIMITS: list[str] = ["1/minute", "60/hour", "1440/day"]
+    RATE_LIMITS: list[str] = ["1/minute", "60/hour", "100/day"]
 
     # Redis settings
     USE_REDIS: bool = False

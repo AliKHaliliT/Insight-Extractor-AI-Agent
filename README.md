@@ -12,16 +12,20 @@ The **Insight Extractor AI Agent** is a model-agnostic document analysis system 
 - A modern **HTML, CSS, and vanilla JavaScript UI**.  
 - Support for multiple **LLM providers** (OpenAI, Anthropic, Google, etc.).  
 
-It allows you to extract structured insights from documents of various formats. Insights are returned as consistent JSON `AnalysisReport` objects, containing thematic, code, quantitative, sentiment, and table insights.  
+It allows you to extract structured insights from documents of various formats. Insights are returned as consistent JSON `AnalysisReport` (`insight_extractor_ai_agent/schemas/analysis_report.py`) objects, containing thematic, code, quantitative, sentiment, and table insights.
 
-👉 A working demo is available [here](#).  
+### 👉 A working demo is available [here](https://insight-extractor-ai-agent.onrender.com/).
+
+The demo is hosted on a hobby plan at Render.com. Free instances go to sleep after periods of inactivity, which can cause the first request to take up to 50 seconds or more. If the site feels unresponsive at first, please allow a little extra time for it to wake up.
+
+To conserve free credits, requests are rate-limited to 1 per minute, 60 per hour, and 100 per day.
 
 > ⚡ The quality, accuracy, and speed of analysis depend on the model you choose. For best results, use models with high context windows and reasoning capabilities (preferably adaptive reasoning).  
 > 📂 Documents of any size are supported from the project side. However, your model must be able to handle them.
 
-You can explore output schemas in `insight_extractor_ai_agent/schemas` or view them [here](https://alikhalilit.github.io/Insight-Extractor-AI-Agent/).
+### You can explore output schemas in `insight_extractor_ai_agent/schemas` or view them [here](https://alikhalilit.github.io/Insight-Extractor-AI-Agent/).
 
-If using Gemini, you can get a free API key from [Google AI Studio](https://aistudio.google.com/).  
+**If using Gemini, you can get a free API key from [Google AI Studio](https://aistudio.google.com/).**
 
 ---
 
@@ -65,7 +69,7 @@ If using Gemini, you can get a free API key from [Google AI Studio](https://aist
    uvicorn main:app --reload
    ```
 
-Use `http://127.0.0.1:8000/api/v1/docs` or `http://127.0.0.1:8000/api/v1/redoc` for documentation.` You can also check the documentation at [here](#).
+**Use `http://127.0.0.1:8000/api/v1/docs` or `http://127.0.0.1:8000/api/v1/redoc` for documentation. You can also check the documentation at [here(docs)](https://alikhalilit.github.io/Insight-Extractor-AI-Agent/api/v1/docs) or [here(redoc)](https://alikhalilit.github.io/Insight-Extractor-AI-Agent/api/v1/redoc).**
 
 ---
 
