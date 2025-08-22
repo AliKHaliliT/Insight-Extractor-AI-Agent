@@ -87,7 +87,7 @@ Use a `.env` file to configure the application.
 | `UVICORN_LOG_LEVEL`   | Log level for Uvicorn server   | `INFO`                                |
 | `API_V1_PREFIX`       | API v1 prefix                  | `/api/v1`                             |
 | `CORS_ORIGINS`        | Allowed CORS origins           | `["*"]`                               |
-| `RATE_LIMITS`         | API rate limits                | `["1/minute", "60/hour", "1440/day"]` |
+| `RATE_LIMITS`         | API rate limits                | `["1/minute", "60/hour", "100/day"]` |
 | `USE_REDIS`           | Enable Redis for rate limiting | `False`                               |
 | `REDIS_URL`           | Redis instance URL             | `None`                                |
 | `STORAGE_TYPE`        | Storage type                   | `local`                               |
