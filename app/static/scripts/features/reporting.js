@@ -42,12 +42,35 @@ export async function downloadReportAsHTML() {
         }
     });
 
-    // 3. Gather styles and create the final HTML string
-    const cssStyles = Array.from(document.styleSheets).map(sheet => {
-        try { return Array.from(sheet.cssRules).map(rule => rule.cssText).join(''); } catch (e) { return ''; }
-    }).join("\n");
+    // 3. Fetch all CSS content from known sources
+    const cssFiles = [
+        '/static/styles/core/base.css',
+        '/static/styles/layout/layout.css',
+        '/static/styles/components/components.css',
+        '/static/styles/components/animations.css'
+    ];
 
-    const htmlString = `<!DOCTYPE html><html lang="en" data-theme="${localStorage.getItem("theme") || "dark"}"><head><meta charset="UTF-8"><title>Report: ${appState.currentReportData.file_name}</title><script src="https://cdn.tailwindcss.com"><\/script><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><style>body{font-family:"Inter",sans-serif;padding:2rem;}${cssStyles}<\/style></head><body><div class="w-full max-w-7xl mx-auto">${reportClone.innerHTML}</div></body></html>`;
+    const stylePromises = cssFiles.map(url => fetch(url).then(res => res.text()));
+    const cssStyles = await Promise.all(stylePromises).then(styles => styles.join('\n'));
+
+    const htmlString = `<!DOCTYPE html>
+<html lang="en" data-theme="${localStorage.getItem("theme") || "dark"}">
+<head>
+    <meta charset="UTF-8">
+    <title>Report: ${appState.currentReportData.file_name}</title>
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: "Inter", sans-serif; padding: 2rem; }
+        ${cssStyles}
+    </style>
+</head>
+<body>
+    <div class="w-full max-w-7xl mx-auto">
+        ${reportClone.innerHTML}
+    </div>
+</body>
+</html>`;
     
     // 4. Trigger the download
     const blob = new Blob([htmlString], { type: "text/html" });
