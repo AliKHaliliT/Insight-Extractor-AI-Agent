@@ -44,10 +44,10 @@ export async function downloadReportAsHTML() {
 
     // 3. Fetch all CSS content from known sources
     const cssFiles = [
-        '/static/styles/core/base.css',
-        '/static/styles/layout/layout.css',
-        '/static/styles/components/components.css',
-        '/static/styles/components/animations.css'
+        "/static/styles/core/base.css",
+        "/static/styles/layout/layout.css",
+        "/static/styles/components/components.css",
+        "/static/styles/components/animations.css"
     ];
 
     const stylePromises = cssFiles.map(url => fetch(url).then(res => res.text()));
