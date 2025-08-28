@@ -1,5 +1,6 @@
+from typing import Any, Optional, Union
+
 from fastapi import HTTPException
-from typing import Union, Any, Optional
 
 
 class CustomHTTPException(HTTPException):

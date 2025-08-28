@@ -1,7 +1,8 @@
-from pydantic import BaseModel, Field, StringConstraints
-from .taxonomy.sentiment_label import SentimentLabel
 from typing import Annotated
 
+from pydantic import BaseModel, Field, StringConstraints
+
+from .taxonomy.sentiment_label import SentimentLabel
 
 
 class SentimentResult(BaseModel):

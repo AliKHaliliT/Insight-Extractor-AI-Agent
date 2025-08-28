@@ -1,8 +1,10 @@
-from pydantic import BaseModel, StringConstraints, Field 
 from typing import Annotated, Optional
+
+from pydantic import BaseModel, Field, StringConstraints
+
+from .location_reference import LocationReference
 from .taxonomy.insight_type import InsightType
 from .taxonomy.severity_level import SeverityLevel
-from .location_reference import LocationReference
 
 
 class BaseInsight(BaseModel):

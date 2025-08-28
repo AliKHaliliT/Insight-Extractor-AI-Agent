@@ -1,7 +1,8 @@
-from .base_insight import BaseInsight
 from typing import Literal
-from .taxonomy.insight_type import InsightType
+
+from .base_insight import BaseInsight
 from .sentiment_result import SentimentResult
+from .taxonomy.insight_type import InsightType
 
 
 class SentimentInsight(BaseInsight):

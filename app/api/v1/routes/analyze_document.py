@@ -1,8 +1,10 @@
-from fastapi import Request, UploadFile, File, Form, Depends
+from fastapi import Depends, File, Form, Request, UploadFile
+
+from insight_extractor_ai_agent.schemas.analysis_report import AnalysisReport
+
+from ....services.analysis_service import AnalysisService
 from ..dependencies.common import get_api_key
 from ..dependencies.get_analyze_document_factory import get_analysis_service
-from ....services.analysis_service import AnalysisService
-from insight_extractor_ai_agent.schemas.analysis_report import AnalysisReport
 
 
 async def analyze_document(

@@ -1,7 +1,9 @@
-from ..utils.class_importing_helper import import_class
 from pydantic_ai import Agent
+
+from ..prompts.system.insight_extractor_agent_system_prompt import \
+    INSIGHT_EXTRACTOR_SYSTEM_PROMPT
 from ..schemas.analysis_report import AnalysisReport
-from ..prompts.system.insight_extractor_agent_system_prompt import INSIGHT_EXTRACTOR_SYSTEM_PROMPT
+from ..utils.class_importing_helper import import_class
 
 
 async def extract_insight(model_name: str, api_key: str, content: str, file_name: str, file_type: str) -> AnalysisReport:

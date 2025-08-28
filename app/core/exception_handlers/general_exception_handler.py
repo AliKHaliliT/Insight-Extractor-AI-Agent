@@ -1,8 +1,9 @@
 from logging import getLogger
+
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
-from ...docs.logic.error_response import create_error_response
 
+from ...docs.logic.error_response import create_error_response
 
 logger = getLogger(__name__)
 

@@ -1,6 +1,7 @@
+from logging.config import dictConfig
+
 from .logging_formatter import SafeRequestIDFormatter
 from .request_id_filter import RequestIDFilter
-from logging.config import dictConfig
 
 
 def setup_logging(handler_log_level: str = "DEBUG", root_log_level: str = "INFO", uvicorn_log_level: str = "INFO") -> None:

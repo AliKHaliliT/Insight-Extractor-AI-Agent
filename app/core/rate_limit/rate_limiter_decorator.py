@@ -1,7 +1,8 @@
-from slowapi.extension import Limiter
-from typing import Callable
 from collections.abc import Awaitable
 import re
+from typing import Callable
+
+from slowapi.extension import Limiter
 
 
 class RateLimiterDecorator:

@@ -1,10 +1,11 @@
 import io
-import fitz
-from docx import Document
-import pandas as pd
-from bs4 import BeautifulSoup
-from typing import Union
 import os
+from typing import Union
+
+from bs4 import BeautifulSoup
+from docx import Document
+import fitz
+import pandas as pd
 
 
 class FileParser:

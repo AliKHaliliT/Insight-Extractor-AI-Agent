@@ -1,6 +1,6 @@
-from .settings import settings
 from ...core.rate_limit.rate_limit_config import get_limiter
 from ...core.rate_limit.rate_limiter_decorator import RateLimiterDecorator
+from .settings import settings
 
 
 class Setup:

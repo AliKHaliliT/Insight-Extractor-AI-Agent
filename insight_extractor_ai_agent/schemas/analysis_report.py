@@ -1,11 +1,13 @@
-from pydantic import BaseModel, Field, StringConstraints
 from datetime import datetime, timezone
-from typing import  Annotated, Union
+from typing import Annotated, Union
+
+from pydantic import BaseModel, Field, StringConstraints
+
+from .code_insight import CodeInsight
 from .quantitative_insight import QuantitativeInsight
-from .thematic_insight import ThematicInsight
 from .sentiment_insight import SentimentInsight
 from .table_insight import TableInsight
-from .code_insight import CodeInsight
+from .thematic_insight import ThematicInsight
 
 
 class AnalysisReport(BaseModel):

@@ -1,5 +1,5 @@
 import importlib
-from typing import Type, Optional
+from typing import Optional, Type
 
 
 def import_class(module_path: str, class_name: str) -> Optional[Type]:

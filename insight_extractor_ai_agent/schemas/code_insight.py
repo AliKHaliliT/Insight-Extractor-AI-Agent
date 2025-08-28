@@ -1,7 +1,9 @@
-from .base_insight import BaseInsight
-from typing import Literal, Annotated, Optional
-from .taxonomy.insight_type import InsightType
+from typing import Annotated, Literal, Optional
+
 from pydantic import StringConstraints
+
+from .base_insight import BaseInsight
+from .taxonomy.insight_type import InsightType
 
 
 class CodeInsight(BaseInsight):

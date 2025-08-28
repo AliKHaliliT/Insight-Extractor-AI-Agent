@@ -1,7 +1,9 @@
-from fastapi import FastAPI
 from typing import Callable
+
+from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.routing import APIRoute
+
 from ...core.config.settings import settings
 
 

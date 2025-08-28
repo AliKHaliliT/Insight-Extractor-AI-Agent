@@ -1,6 +1,8 @@
-from pydantic_settings import BaseSettings
-from ...docs.content.headers_content import headers_content
 from typing import Optional
+
+from pydantic_settings import BaseSettings
+
+from ...docs.content.headers_content import headers_content
 
 
 class Settings(BaseSettings):

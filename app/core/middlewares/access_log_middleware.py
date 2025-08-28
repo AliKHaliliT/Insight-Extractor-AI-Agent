@@ -1,7 +1,7 @@
-import time
 from logging import getLogger
-from starlette.types import ASGIApp, Scope, Receive, Send
+import time
 
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 # Custom access logger for the application
 app_access_logger = getLogger("IEAIA.access")

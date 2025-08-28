@@ -1,7 +1,9 @@
-from fastapi import Request, Depends
 from typing import Callable
-from ..dependencies.get_available_models_factory import get_fetch_model_list
+
+from fastapi import Depends, Request
 from fastapi.responses import JSONResponse
+
+from ..dependencies.get_available_models_factory import get_fetch_model_list
 
 
 async def get_available_models(

@@ -1,9 +1,10 @@
 from logging import getLogger
-from fastapi import Request, status
-from slowapi.errors import RateLimitExceeded
-from fastapi.responses import JSONResponse
-from ...docs.logic.error_response import create_error_response
 
+from fastapi import Request, status
+from fastapi.responses import JSONResponse
+from slowapi.errors import RateLimitExceeded
+
+from ...docs.logic.error_response import create_error_response
 
 logger = getLogger(__name__)
 

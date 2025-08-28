@@ -1,8 +1,9 @@
 from logging import getLogger
-from fastapi import UploadFile
-from typing import Callable, Awaitable, Union, Tuple
-from insight_extractor_ai_agent.schemas.analysis_report import AnalysisReport
+from typing import Awaitable, Callable, Tuple, Union
 
+from fastapi import HTTPException, UploadFile
+
+from insight_extractor_ai_agent.schemas.analysis_report import AnalysisReport
 
 logger = getLogger(__name__)
 
@@ -18,7 +19,7 @@ class AnalysisService:
     Usage:
     ------
     ```python
-    service = AnalysisService(extract_insight, get_content_from_file)
+    service = AnalysisService(extract_insight, retrieve_content_from_file)
     report = await service.analyze_document(file, api_key, model_name)
     ```
 
@@ -27,7 +28,7 @@ class AnalysisService:
     def __init__(
         self,
         extract_insight: Callable[[str, str, str, str, str], Awaitable[AnalysisReport]],
-        get_content_from_file: Callable[[Union[str, bytes], str], Tuple[str, str]],
+        retrieve_content_from_file: Callable[[Union[str, bytes], str], Tuple[str, str]],
     ) -> None:
         
         """
@@ -40,7 +41,7 @@ class AnalysisService:
         extract_insight : Callable
             Dependency that performs AI-based insight extraction.
 
-        get_content_from_file : Callable
+        retrieve_content_from_file : Callable
             Dependency that parses file bytes into content and file_type.
 
 
@@ -49,9 +50,15 @@ class AnalysisService:
         None.
 
         """
-        
+
+        if not isinstance(extract_insight, Callable):
+            raise HTTPException(400, f"extract_insight must be a callable: Received {type(extract_insight)} with type {type(extract_insight)}")
+        if not isinstance(retrieve_content_from_file, Callable):
+            raise HTTPException(400, f"retrieve_content_from_file must be a callable: Received {type(retrieve_content_from_file)} with type {type(retrieve_content_from_file)}")
+
+  
         self.extract_insight = extract_insight
-        self.get_content_from_file = get_content_from_file
+        self.retrieve_content_from_file = retrieve_content_from_file
 
 
     async def analyze_document(self, file: UploadFile, api_key: str, model_name: str) -> AnalysisReport:
@@ -90,7 +97,7 @@ class AnalysisService:
 
         # Step 1: Parse file using injected dependency
         file_content_bytes = await file.read()
-        content, file_type = self.get_content_from_file(file_content_bytes, file.filename)
+        content, file_type = self.retrieve_content_from_file(file_content_bytes, file.filename)
         logger.info(f"File {file.filename} parsed successfully.")
 
         # Step 2: Run AI insight extraction

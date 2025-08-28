@@ -1,7 +1,9 @@
-from .base_insight import BaseInsight
-from typing import Literal, Annotated, Union, Optional
-from .taxonomy.insight_type import InsightType
+from typing import Annotated, Literal, Optional, Union
+
 from pydantic import StringConstraints
+
+from .base_insight import BaseInsight
+from .taxonomy.insight_type import InsightType
 
 
 class QuantitativeInsight(BaseInsight):

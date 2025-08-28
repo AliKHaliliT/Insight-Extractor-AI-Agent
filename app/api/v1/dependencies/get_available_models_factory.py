@@ -1,4 +1,5 @@
 from typing import Callable
+
 from ....utils.available_models_list import fetch_model_list
 
 
