@@ -3,6 +3,7 @@ from typing import Callable
 from fastapi import Depends, Request
 from fastapi.responses import JSONResponse
 
+from ....schemas.model_list import ModelList
 from ..dependencies.get_available_models_factory import get_fetch_model_list
 
 
@@ -28,4 +29,4 @@ async def get_available_models(
         
     """
 
-    return JSONResponse(content=get_model_list())
+    return ModelList.model_validate(get_model_list())

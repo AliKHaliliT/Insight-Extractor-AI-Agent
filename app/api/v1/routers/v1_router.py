@@ -18,7 +18,6 @@ v1_router = APIRouter(tags=["All Routes"])
 v1_router.add_api_route(
     "/get-available-models",
     get_available_models,
-    response_model=ModelList,
     methods=["GET"],
     responses={
         200: create_docs_response("Successful Response", generate_docs_response_example(ModelList)),
