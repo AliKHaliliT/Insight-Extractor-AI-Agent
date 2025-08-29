@@ -21,7 +21,8 @@ The demo is hosted on a hobby plan at Render.com. Free instances go to sleep aft
 To conserve free credits, requests are rate-limited to 1 per minute, 60 per hour, and 100 per day.
 
 > ⚡ The quality, accuracy, and speed of analysis depend on the model you choose. For best results, use models with high context windows and reasoning capabilities (preferably adaptive reasoning).  
-> 📂 Documents of any size are supported from the project side. However, your model must be able to handle them.
+> 📂 Documents of any size are supported from the project side. However, your model must be able to handle them.  
+> 📄 Currently, the agent is set to retry up to three times if it fails to generate a structured insight output. If it still cannot produce a proper response after three attempts, it will throw an error. Therefore, if an analysis takes longer than usual, it likely indicates that the model encountered a failure and the retry mechanism was triggered. This can occur for various reasons, including limitations in the model’s capabilities or the way the random seed was initialized for that specific session.
 
 ### You can explore output schemas in `insight_extractor_ai_agent/schemas` or view them [here](https://alikhalilit.github.io/Insight-Extractor-AI-Agent/).
 
