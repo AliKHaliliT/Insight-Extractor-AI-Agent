@@ -1,7 +1,7 @@
-from pydantic import RootModel
+from pydantic import BaseModel
 
 from .model_info import ModelInfo
 
 
-class ModelList(RootModel[dict[str, list[ModelInfo]]]):
-    pass
+class ModelList(BaseModel):
+    providers: dict[str, list[ModelInfo]]

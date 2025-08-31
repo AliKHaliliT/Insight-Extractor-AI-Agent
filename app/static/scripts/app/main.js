@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Fetch the available AI models and populate the dropdown
     try {
-        const modelsByProvider = await fetchModels();
+        const modelsByProvider = (await fetchModels()).providers;
         ui.modelSelect.innerHTML = ""; 
         for (const provider in modelsByProvider) {
             const optgroup = document.createElement("optgroup");
